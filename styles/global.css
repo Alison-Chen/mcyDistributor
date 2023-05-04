@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  user-select: none;
+}
+
+.slick-slide {
+  padding: 0 8px;
+  box-sizing: border-box;
+}

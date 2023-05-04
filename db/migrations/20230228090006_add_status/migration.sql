@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `commodityOrder` MODIFY `status` ENUM('PROCESS', 'DELIVER', 'FINISH', 'CANCEL') NULL DEFAULT 'PROCESS';

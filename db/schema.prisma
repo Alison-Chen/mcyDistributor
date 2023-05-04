@@ -1,0 +1,140 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// --------------------------------------
+
+model User {
+  id             Int       @id @default(autoincrement())
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  name           String?
+  email          String?   @unique
+  lineId         String
+  hashedPassword String?
+  role           String    @default("USER")
+  companyName    String?
+  taxId          String?
+  city           String?
+  county         String?
+  address        String?
+  phone          String?
+  cellphone      String?
+  birth          DateTime?
+  review         Boolean   @default(false)
+  archived       Boolean   @default(false)
+
+  tokens   Token[]
+  sessions Session[]
+  shopList shopList[]
+}
+
+model Session {
+  id                 Int       @id @default(autoincrement())
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  expiresAt          DateTime?
+  handle             String    @unique
+  hashedSessionToken String?
+  antiCSRFToken      String?
+  publicData         String?
+  privateData        String?
+
+  user   User? @relation(fields: [userId], references: [id])
+  userId Int?
+}
+
+model Token {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  hashedToken String
+  type        String
+  // See note below about TokenType enum
+  // type        TokenType
+  expiresAt   DateTime
+  sentTo      String
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  @@unique([hashedToken, type])
+}
+
+enum OrderStatus {
+  PROCESS
+  DELIVER
+  FINISH
+  CANCEL
+}
+
+model commodityOrder {
+  id              Int          @id @default(autoincrement())
+  uuid            String       @unique
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  phone           String
+  email           String
+  taxId           String
+  name            String
+  userId          Int
+  address         String
+  shoplist        String       @db.LongText
+  status          OrderStatus? @default(PROCESS)
+  logisticOrderId String?
+  price           Int
+  mark            String?
+}
+
+model product {
+  id           Int            @id @default(autoincrement())
+  type         String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  name         String
+  price        Int
+  model        String
+  image        String
+  status       Boolean
+  productColor productColor[]
+}
+
+model productColor {
+  id        Int      @id @default(autoincrement())
+  product   product? @relation(fields: [productId], references: [id])
+  productId Int?
+  value     String
+  label     String
+  imgUrl    String
+  amount    Int      @default(1)
+}
+
+model shopList {
+  id        Int      @id @default(autoincrement())
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    Int?
+  amount    Int
+  assemble  String
+  battery   String
+  charger   Boolean
+  color     String
+  model     String
+  remark    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// NOTE: It's highly recommended to use an enum for the token type
+//       but enums only work in Postgres.
+//       See: https://blitzjs.com/docs/database-overview#switch-to-postgre-sql
+// enum TokenType {
+//   RESET_PASSWORD
+// }

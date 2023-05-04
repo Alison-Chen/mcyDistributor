@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `commodityOrder` ADD COLUMN `status` ENUM('PROCESS', 'DELIVER', 'FINISH') NULL DEFAULT 'PROCESS';
